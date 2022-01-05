@@ -16,7 +16,7 @@ Feel free to submit issues and feature requests.
 - [lxml](https://lxml.de/) - A python library for parsing XML/HTML. `pip install lxml`
 - [webtorrent](https://webtorrent.io/) - A tool to stream torrent. `npm install webtorrent-cli -g`
 
-## Installation
+## Installation for Linux/macOS
 
 ### cURL
 cURL **cthulhu** to your **$PATH** and give execute permissions.

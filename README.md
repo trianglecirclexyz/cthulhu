@@ -22,8 +22,8 @@ Feel free to submit issues and feature requests.
 cURL **cthulhu** to your **$PATH** and give execute permissions.
 
 ```sh
-$ sudo curl -sL "https://raw.githubusercontent.com/trianglecirclexyz/cthulhu/main/cthulhu" -o /usr/local/bin/cthulhu
-$ sudo chmod +x /usr/local/bin/cthulhu
+sudo curl -sL "https://raw.githubusercontent.com/trianglecirclexyz/cthulhu/main/cthulhu" -o /usr/local/bin/cthulhu
+sudo chmod +x /usr/local/bin/cthulhu
 ```
 - To update, just do `curl` again, no need to `chmod` anymore.
 - To uninstall, remove `cthulhu` from your **$PATH**, for example `sudo rm -f /usr/local/bin/cthulhu.

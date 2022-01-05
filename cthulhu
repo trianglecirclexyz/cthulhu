@@ -1,0 +1,176 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import requests
+from operator import itemgetter
+
+try:
+    from lxml import html
+except ImportError:
+    print('error: lxml is not installed')
+    exit()
+
+# grab movies, tv shows, and anime (sort by seeder count)
+# might add flags to only search in certain categories (movies, tv, anime)
+
+# can be changed to a mirror, might automate switching mirrors if 
+# server doesn't respond or something
+base_url = 'https://1337x.wtf'
+
+responses = []
+
+def main():
+
+    # checks if webtorrent and mpv are installed in /usr/bin/
+    flag = 0
+    if not os.path.exists('/usr/bin/webtorrent'):
+        print('error: webtorrent-cli is not installed')
+        flag += 1
+    if not os.path.exists('/usr/bin/mpv'):
+        print('error: mpv is not installed')
+        flag += 1
+    if flag > 0:
+        print('exiting cthulhu...')
+        exit()
+
+    # creates /home/$USER/.cache/cthulhu/ (not needed for now)
+    # os.makedirs(os.path.expanduser('~')+'/.cache/cthulhu', exist_ok=True)
+    # cache_dir = os.path.expanduser('~')+'/.cache/cthulhu'
+
+    # parsing arguments
+    args = sys.argv
+    parse_args(args)
+
+    # parsing html responses from search query
+    final_results = parse_responses()
+    
+    # displays results for requesting magnet link 
+    magnet_link = get_magnet_link(final_results, display_count=20)
+
+    # play selected torrent in webtorrent
+    os.system(f'webtorrent --mpv \'{magnet_link}\'')
+ 
+
+def parse_args(args):
+
+    flags = ['-h', '--help']
+
+    def direct_query():
+        query = ''
+        for i in range(1, len(args)):
+            if args[i] not in flags:
+                query += args[i]
+                if i != len(args)-1:
+                    query += '+'       
+        # debug, probably show in display
+        if query != '':
+            search(query)
+
+    if len(args) == 1:
+        query = input('Enter search query: ')
+        search(query)
+    else:
+        if flags[0] == args[1] or flags[1] == args[1]:
+            help()
+        else:
+            direct_query()
+
+
+def search(search_query):
+    if len(search_query) < 3:
+        print('Please make sure your query contains at least 3 characters')
+        exit()
+    responses.append(requests.get(f'{base_url}/category-search/{search_query}/Movies/1/').text)
+    responses.append(requests.get(f'{base_url}/category-search/{search_query}/TV/1/').text)
+    responses.append(requests.get(f'{base_url}/category-search/{search_query}/Anime/1/').text)
+
+
+def help():
+    # TODO help function
+    exit()
+
+
+def parse_responses():
+
+    packed_data = []
+    titles = []
+    seeders = []
+    leechers = []
+    upload_dates = []
+    file_sizes = []
+    links = []
+
+    flag = 0
+    for response in responses:
+        
+        root = html.fromstring(response).xpath('//tbody/tr')
+
+        if not root:
+            flag += 1
+
+        for tr in root:
+            # title
+            tmp_title = tr.xpath('.//td//a/text()')[0]
+
+            # torrent link
+            tmp_torrent_link = tr.xpath('.//td//a/@href')[1]
+
+            # [seeders, leechers, upload date, size]
+            tmp_additional_data = tr.xpath('.//td/text()')
+
+            titles.append(tmp_title)
+            seeders.append(int(tmp_additional_data[0]))
+            leechers.append(int(tmp_additional_data[1]))
+            upload_dates.append(tmp_additional_data[2])
+            file_sizes.append(tmp_additional_data[3])
+            links.append(tmp_torrent_link)
+
+    if flag == 3:
+        print('No results found')
+        exit()
+
+    for i in range(len(titles)):
+        packed_data.append([titles[i], links[i], upload_dates[i], seeders[i], leechers[i], file_sizes[i]])
+
+    # sort by seeder count
+    sorted_data = sorted(packed_data, key=itemgetter(3), reverse=True)
+
+    return sorted_data
+
+
+def get_magnet_link(results, display_count):
+
+    if display_count>len(results):
+        display_count = len(results)
+    
+    # display data to user
+    for i in range(display_count): 
+        # TODO fix display of data
+        print(f'[{i+1}] | {results[i][0]}')
+        # print(f'\t{results[i][2]}')
+        print(f'\tS:{results[i][3]}, L:{results[i][4]}')
+
+    selection = int(input('\nSelect by number: '))
+    while selection not in range(1, display_count+1):
+        print('Selection out of range, please try again')
+        selection = int(input('\nSelect by number: '))
+
+
+    target_link = f'{base_url}{results[selection-1][1]}'
+    magnet_response = requests.get(target_link).text
+
+    magnet_link = html.fromstring(magnet_response).xpath('//li/a/@href')[29]
+
+    return magnet_link
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print(' Interrupted')
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)

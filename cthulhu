@@ -8,7 +8,7 @@ from operator import itemgetter
 try:
     from lxml import html
 except ImportError:
-    print('error: lxml is not installed')
+    print('error: lxml is not installed (hint: pip install lxml)')
     exit()
 
 # grab movies, tv shows, and anime (sort by seeder count)

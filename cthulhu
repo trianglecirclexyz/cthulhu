@@ -67,6 +67,7 @@ def parse_args(args):
         if query != '':
             search(query)
 
+    # case where no arguments are included 
     if len(args) == 1:
         query = input('Enter search query: ')
         search(query)
@@ -81,9 +82,11 @@ def search(search_query):
     if len(search_query) < 3:
         print('Please make sure your query contains at least 3 characters')
         exit()
+    print('Receiving response...')
     responses.append(requests.get(f'{base_url}/category-search/{search_query}/Movies/1/').text)
     responses.append(requests.get(f'{base_url}/category-search/{search_query}/TV/1/').text)
     responses.append(requests.get(f'{base_url}/category-search/{search_query}/Anime/1/').text)
+    print()
 
 
 def help():
@@ -145,19 +148,23 @@ def get_magnet_link(results, display_count):
         display_count = len(results)
     
     # display data to user
+    print('\033[0mNum\t    S/L\t\tTorrent Name\033[0m')
+    title_width = 0
+    if os.get_terminal_size()[0] > 24:
+        title_width = os.get_terminal_size()[0]-25
     for i in range(display_count): 
-        # TODO fix display of data
-        print(f'[{i+1}] | {results[i][0]}')
-        # print(f'\t{results[i][2]}')
-        print(f'\tS:{results[i][3]}, L:{results[i][4]}')
+        torrent_name = results[i][0]
+        if len(torrent_name) > title_width:
+            torrent_name = torrent_name[0:title_width-3]+'...'
+        seedleech = f'(S:{results[i][3]}, L:{results[i][4]})'
+        print(' \033[1m{:>2}\033[0m\t{:>5}/{:<5}\t{}'.format(i+1, results[i][3], results[i][4], torrent_name))
 
-    selection = int(input('\nSelect by number: '))
-    while selection not in range(1, display_count+1):
+    selection = input('\nSelect by number: ')
+    while int(selection) not in range(1, display_count+1):
         print('Selection out of range, please try again')
-        selection = int(input('\nSelect by number: '))
+        selection = input('\nSelect by number: ')
 
-
-    target_link = f'{base_url}{results[selection-1][1]}'
+    target_link = f'{base_url}{results[int(selection)-1][1]}'
     magnet_response = requests.get(target_link).text
 
     magnet_link = html.fromstring(magnet_response).xpath('//li/a/@href')[29]

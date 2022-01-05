@@ -26,6 +26,6 @@ sudo curl -sL "https://raw.githubusercontent.com/trianglecirclexyz/cthulhu/main/
 sudo chmod +x /usr/local/bin/cthulhu
 ```
 - To update, just do `curl` again, no need to `chmod` anymore.
-- To uninstall, remove `cthulhu` from your **$PATH**, for example `sudo rm -f /usr/local/bin/cthulhu.
+- To uninstall, remove `cthulhu` from your **$PATH**, for example `sudo rm -f /usr/local/bin/cthulhu.`
 
 

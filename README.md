@@ -12,8 +12,9 @@ Feel free to submit issues and feature requests.
 
 ### Notable Features (so far)
 
-- Running in the terminal
-- Filtering out unwanted results, such as application files and pornogrophy, whilst still querying results from multiple other categories (Movies, TV Shows, Anime)
+- Runs in the terminal
+- Flags for filtering results by specific categories (Movies, TV Shows, Anime)
+- Ability to filter out unwanted results, such as application files and pornogrophy
 
 ## Requirements
 

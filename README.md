@@ -1,6 +1,6 @@
 # Cthulhu
 
-Cthulhu is a simple python CLI application that facilitates the streaming of torrents directly from 1337x. It uses [webtorrent](https://webtorrent.io/) to stream the video from magnet links directly.
+Cthulhu is a simple python CLI application that facilitates the streaming of torrents directly from 1337x. It uses [webtorrent](https://webtorrent.io/) to stream video from magnet links directly.
 
 <p align="center">
 <img src="./preview.gif" alt="Video Preview" width="1000px">

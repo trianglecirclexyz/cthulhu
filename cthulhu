@@ -35,12 +35,13 @@ def main():
         exit()
 
     # creates /home/$USER/.cache/cthulhu/ (not needed for now)
-    # os.makedirs(os.path.expanduser('~')+'/.cache/cthulhu', exist_ok=True)
-    # cache_dir = os.path.expanduser('~')+'/.cache/cthulhu'
+    """ os.makedirs(os.path.expanduser('~')+'/.cache/cthulhu', exist_ok=True)
+    cache_dir = os.path.expanduser('~')+'/.cache/cthulhu' """
 
     # parsing arguments
     args = sys.argv
-    parse_args(args)
+    parsed_args = parse_args(args)
+
 
     # parsing html responses from search query
     final_results = parse_responses()
@@ -54,32 +55,76 @@ def main():
 
 def parse_args(args):
 
-    # TODO implement flags -a...--anime
-    flags = ['-h', '--help', '-a', '--all', '-m', '--movie', '-s', '--show', '-w', '--anime']
+    parsed_args = []
 
-    def direct_query():
+    # TODO implement flags --fast...--no-clean
+    """
+    flags:
+    -h, --help
+    1: --fast 
+    2: -m, --movie
+    3: -s, --show
+    4: -a, --anime
+    5: --no-clean
+    """
+
+    flags = ['-h', '--help', '--fast', '-m', '--movie', '-s', '--show', '-a', '--anime', '--no-clean']
+
+    def get_query(filtering='default'):
         query = ''
         for i in range(1, len(args)):
             if args[i] not in flags:
                 query += args[i]
                 if i != len(args)-1:
                     query += '+'       
-        # debug, probably show in display
         if query != '':
-            search(query)
-
-    # case where no arguments are included 
-    if len(args) == 1:
-        query = input('Enter search query: ')
-        search(query)
-    else:
-        if flags[0] == args[1] or flags[1] == args[1]:
-            help()
+            search(query, filtering)
         else:
-            direct_query()
+            query = input('Enter search query: ')
+            search(query, filtering)
+
+    # the below if-else tree is dogshit, I will admit. Very slow.
+    # the thing is, even if it's slow, it's still very fast
+    # which makes it very cool, and not my problem
+
+    searched = False
+
+    if len(args) == 1:
+        get_query()
+    else:
+        # -h, --help
+        if flags[0] in args or flags[1] in args:
+            help()
+        # --fast
+        if flags[2] in args:
+            if not searched:
+                get_query(filtering='fast')
+                searched = True
+        # -m, --movie
+        if flags[3] in args or flags[4] in args:
+            if not searched:
+                get_query(filtering='movie')
+                searched = True
+        # -s, --show
+        if flags[5] in args or flags[6] in args:
+            if not searched:
+                get_query(filtering='show')
+                searched = True
+        # -a, --anime
+        if flags[7] in args or flags[8] in args:
+            if not searched:
+                get_query(filtering='anime')
+                searched = True
+        
+    if not searched:
+        get_query()
+
+        
+        
+    return parsed_args
 
 
-def search(search_query):
+def search(search_query, filtering):
 
     #while int(selection) not in range(1, display_count+1):
     #    print('Selection out of range, please try again')
@@ -88,10 +133,23 @@ def search(search_query):
     while len(search_query) < 3:
         print('Please make sure your query contains at least 3 characters')
         search_query = input('\nEnter search query: ')
-    print('Receiving response...')
-    responses.append(requests.get(f'{base_url}/category-search/{search_query}/Movies/1/').text)
-    responses.append(requests.get(f'{base_url}/category-search/{search_query}/TV/1/').text)
-    responses.append(requests.get(f'{base_url}/category-search/{search_query}/Anime/1/').text)
+    print('Receiving response...', end=' ')
+    if filtering == 'default':
+        responses.append(requests.get(f'{base_url}/category-search/{search_query}/Movies/1/').text)
+        responses.append(requests.get(f'{base_url}/category-search/{search_query}/TV/1/').text)
+        responses.append(requests.get(f'{base_url}/category-search/{search_query}/Anime/1/').text)
+    elif filtering == 'fast':
+        print('Displaying non-filtered results')
+        responses.append(requests.get(f'{base_url}/search/{search_query}/1/').text)
+    elif filtering == 'movie':
+        print('Displaying movies only:')
+        responses.append(requests.get(f'{base_url}/category-search/{search_query}/Movies/1/').text)
+    elif filtering == 'show':
+        print('Displaying shows only:')
+        responses.append(requests.get(f'{base_url}/category-search/{search_query}/TV/1/').text)
+    elif filtering == 'anime':
+        print('Displaying anime only:')
+        responses.append(requests.get(f'{base_url}/category-search/{search_query}/Anime/1/').text)
     print()
 
 
@@ -111,7 +169,10 @@ def parse_responses():
     links = []
 
     flag = 0
+    num_response = 0
     for response in responses:
+        
+        num_response += 1
         
         root = html.fromstring(response).xpath('//tbody/tr')
 
@@ -135,7 +196,7 @@ def parse_responses():
             file_sizes.append(tmp_additional_data[3])
             links.append(tmp_torrent_link)
 
-    if flag == 3:
+    if flag == num_response:
         print('No results found\n')
         exit()
 

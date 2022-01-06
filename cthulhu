@@ -51,6 +51,11 @@ def main():
 
     # play selected torrent in webtorrent
     os.system(f'webtorrent --mpv \'{magnet_link}\'')
+
+    # cleans /tmp/webtorrent directory if specified by --no-clean
+    print('Cleaning /tmp/webtorrent')
+    if 'no-clean' in parsed_args:
+        os.system('rm -rf /tmp/webtorrent')
  
 
 def parse_args(args):
@@ -115,6 +120,9 @@ def parse_args(args):
             if not searched:
                 get_query(filtering='anime')
                 searched = True
+        # --no-clean
+        if flags[9] in args:
+            parsed_args.append('no-clean')
         
     if not searched:
         get_query()

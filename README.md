@@ -14,7 +14,7 @@ Feel free to submit issues and feature requests.
 
 - Runs in the terminal
 - Flags for filtering results by specific categories (Movies, TV Shows, Anime)
-- Ability to filter out unwanted results, such as application files and pornogrophy
+- Filtering out unwanted results by default, such as application files and pornogrophy
 
 ## Requirements
 

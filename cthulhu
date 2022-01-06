@@ -54,7 +54,8 @@ def main():
 
 def parse_args(args):
 
-    flags = ['-h', '--help']
+    # TODO implement flags -a...--anime
+    flags = ['-h', '--help', '-a', '--all', '-m', '--movie', '-s', '--show', '-w', '--anime']
 
     def direct_query():
         query = ''
@@ -79,9 +80,14 @@ def parse_args(args):
 
 
 def search(search_query):
-    if len(search_query) < 3:
+
+    #while int(selection) not in range(1, display_count+1):
+    #    print('Selection out of range, please try again')
+    #    selection = input('\nSelect by number: ')
+
+    while len(search_query) < 3:
         print('Please make sure your query contains at least 3 characters')
-        exit()
+        search_query = input('\nEnter search query: ')
     print('Receiving response...')
     responses.append(requests.get(f'{base_url}/category-search/{search_query}/Movies/1/').text)
     responses.append(requests.get(f'{base_url}/category-search/{search_query}/TV/1/').text)
@@ -130,7 +136,7 @@ def parse_responses():
             links.append(tmp_torrent_link)
 
     if flag == 3:
-        print('No results found')
+        print('No results found\n')
         exit()
 
     for i in range(len(titles)):

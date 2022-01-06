@@ -3,7 +3,7 @@
 Cthulhu is a simple python CLI application that facilitates the streaming of torrents directly from 1337x. It uses [webtorrent](https://webtorrent.io/) to stream the video from magnet links directly.
 
 <p align="center">
-<img src="./preview.gif" alt="Video Preview" width="500px">
+<img src="./preview.gif" alt="Video Preview" width="1000px">
 </p>
 
 Cthulhu is heavily inspired by [Bugswriter's notflix](https://github.com/Bugswriter/notflix), which was written using shell scripting. The differences between our programs aren't very stark. All in all, I wrote this program mainly for fun and practice. 

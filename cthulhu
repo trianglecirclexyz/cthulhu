@@ -49,13 +49,16 @@ def main():
     # displays results for requesting magnet link 
     magnet_link = get_magnet_link(final_results, display_count=20)
 
-    # play selected torrent in webtorrent
-    os.system(f'webtorrent --mpv \'{magnet_link}\'')
+    if not 'get-magnet' in parsed_args:
+        # play selected torrent in webtorrent
+        os.system(f'peerflix --mpv -a \'{magnet_link}\'')
 
-    # cleans /tmp/webtorrent directory if specified by --no-clean
-    print('Cleaning /tmp/webtorrent')
-    if 'no-clean' in parsed_args:
-        os.system('rm -rf /tmp/webtorrent')
+        # cleans /tmp/webtorrent directory if specified by --no-clean
+        print('Cleaning /tmp/webtorrent...')
+        if 'no-clean' in parsed_args:
+            os.system('rm -rf /tmp/webtorrent')
+    else: 
+        print(magnet_link)
  
 
 def parse_args(args):
@@ -66,14 +69,15 @@ def parse_args(args):
     """
     flags:
     -h, --help
-    1: --fast 
-    2: -m, --movie
-    3: -s, --show
-    4: -a, --anime
-    5: --no-clean
+    --fast 
+    -m, --movie
+    -s, --show
+    -a, --anime
+    --no-clean
+    --get-magnet
     """
 
-    flags = ['-h', '--help', '--fast', '-m', '--movie', '-s', '--show', '-a', '--anime', '--no-clean']
+    flags = ['-h', '--help', '--fast', '-m', '--movie', '-s', '--show', '-a', '--anime', '--no-clean', '--get-magnet']
 
     def get_query(filtering='default'):
         query = ''
@@ -123,12 +127,14 @@ def parse_args(args):
         # --no-clean
         if flags[9] in args:
             parsed_args.append('no-clean')
+        # --get-magnet
+        if flags[10] in args:
+            parsed_args.append('get-magnet')
         
     if not searched:
         get_query()
 
-        
-        
+
     return parsed_args
 
 
@@ -143,6 +149,7 @@ def search(search_query, filtering):
         search_query = input('\nEnter search query: ')
     print('Receiving response...', end=' ')
     if filtering == 'default':
+        print()
         responses.append(requests.get(f'{base_url}/category-search/{search_query}/Movies/1/').text)
         responses.append(requests.get(f'{base_url}/category-search/{search_query}/TV/1/').text)
         responses.append(requests.get(f'{base_url}/category-search/{search_query}/Anime/1/').text)

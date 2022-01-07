@@ -169,16 +169,7 @@ def search(search_query, filtering):
 
 
 def help():
-    """
-    flags:
-    -h, --help
-    --fast 
-    -m, --movie
-    -s, --show
-    -a, --anime
-    --no-clean
-    --get-magnet
-    """
+
     print('Usage: cthulhu [options] search-query\n')
     print('Options:')
     print(' {:15}\t{}'.format('--fast', 'Searches without any filter -> faster requests'))

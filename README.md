@@ -18,8 +18,9 @@ Feel free to submit issues and feature requests.
 
 ## Requirements
 
+- [mpv](https://github.com/mpv-player/mpv) 
 - [lxml](https://lxml.de/) - A python library for parsing XML/HTML. `pip install lxml`
-- [webtorrent](https://webtorrent.io/) - A tool to stream torrent. `npm install webtorrent-cli -g`
+- [peerflix](https://github.com/mafintosh/peerflix) - A tool to stream torrents. `npm install -g peerflix`
 
 ## Installation for Linux/macOS
 

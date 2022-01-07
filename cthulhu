@@ -54,9 +54,9 @@ def main():
         os.system(f'peerflix --mpv -a \'{magnet_link}\'')
 
         # cleans /tmp/webtorrent directory if specified by --no-clean
-        print('Cleaning /tmp/webtorrent...')
+        print('Cleaning torrent cache...')
         if 'no-clean' in parsed_args:
-            os.system('rm -rf /tmp/webtorrent')
+            os.system('rm -rf /tmp/torrent-stream')
     else: 
         print(magnet_link)
  
@@ -65,7 +65,7 @@ def parse_args(args):
 
     parsed_args = []
 
-    # TODO implement flags --fast...--no-clean
+    # TODO implement fullscreen flag
     """
     flags:
     -h, --help
@@ -169,7 +169,25 @@ def search(search_query, filtering):
 
 
 def help():
-    # TODO help function
+    """
+    flags:
+    -h, --help
+    --fast 
+    -m, --movie
+    -s, --show
+    -a, --anime
+    --no-clean
+    --get-magnet
+    """
+    print('Usage: cthulhu [options] search-query\n')
+    print('Options:')
+    print(' {:15}\t{}'.format('--fast', 'Searches without any filter -> faster requests'))
+    print(' {:15}\t{}'.format('-m, --movie', 'Only searches through Movie category'))
+    print(' {:15}\t{}'.format('-s, --show', 'Only searches through Show category'))
+    print(' {:15}\t{}'.format('-a, --anime', 'Only searches through Anime category'))
+    print(' {:15}\t{}'.format('--no-clean', 'Avoids deleting the torrent cache'))
+    print(' {:15}\t{}'.format('--get-magnet', 'Prints the torrent magnet link'))
+    print()
     exit()
 
 

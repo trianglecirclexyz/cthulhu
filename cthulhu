@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
 
+'''
+The below code is probably garbage. This is my first 
+real "project", so I am still learning the conventions 
+and structures. For now, though, my policy is 
+if the code works, it works.
+'''
+
+# TODO add vlc support 
+# TODO add nyaa.si as another source
+
 import os
 import sys
 import requests
@@ -11,9 +21,6 @@ except ImportError:
     print('error: lxml is not installed (hint: pip install lxml)')
     exit()
 
-# grab movies, tv shows, and anime (sort by seeder count)
-# might add flags to only search in certain categories (movies, tv, anime)
-
 # can be changed to a mirror, might automate switching mirrors if 
 # server doesn't respond or something
 base_url = 'https://1337x.wtf'
@@ -22,21 +29,13 @@ responses = []
 
 def main():
 
-    # checks if webtorrent and mpv are installed in /usr/bin/
-    flag = 0
-    if not os.path.exists('/usr/bin/webtorrent'):
-        print('error: webtorrent-cli is not installed')
-        flag += 1
     if not os.path.exists('/usr/bin/mpv'):
         print('error: mpv is not installed')
-        flag += 1
-    if flag > 0:
-        print('exiting cthulhu...')
-        exit()
+        ...
 
-    # creates /home/$USER/.cache/cthulhu/ (not needed for now)
-    """ os.makedirs(os.path.expanduser('~')+'/.cache/cthulhu', exist_ok=True)
-    cache_dir = os.path.expanduser('~')+'/.cache/cthulhu' """
+    # creates /home/$USER/.config/cthulhu/ (not needed for now)
+    """ os.makedirs(os.path.expanduser('~')+'/.config/cthulhu', exist_ok=True)
+    cache_dir = os.path.expanduser('~')+'/.config/cthulhu' """
 
     # parsing arguments
     args = sys.argv
@@ -66,16 +65,6 @@ def parse_args(args):
     parsed_args = []
 
     # TODO implement fullscreen flag
-    """
-    flags:
-    -h, --help
-    --fast 
-    -m, --movie
-    -s, --show
-    -a, --anime
-    --no-clean
-    --get-magnet
-    """
 
     flags = ['-h', '--help', '--fast', '-m', '--movie', '-s', '--show', '-a', '--anime', '--no-clean', '--get-magnet']
 
@@ -92,10 +81,6 @@ def parse_args(args):
             query = input('Enter search query: ')
             search(query, filtering)
 
-    # the below if-else tree is dogshit, I will admit. Very slow.
-    # the thing is, even if it's slow, it's still very fast
-    # which makes it very cool, and not my problem
-
     searched = False
 
     if len(args) == 1:
@@ -103,7 +88,16 @@ def parse_args(args):
     else:
         # -h, --help
         if flags[0] in args or flags[1] in args:
-            help()
+            print('Usage: cthulhu [options] search-query\n')
+            print('Options:')
+            print(' {:15}\t{}'.format('--fast', 'Searches without any filter -> faster requests'))
+            print(' {:15}\t{}'.format('-m, --movie', 'Only searches through Movie category'))
+            print(' {:15}\t{}'.format('-s, --show', 'Only searches through Show category'))
+            print(' {:15}\t{}'.format('-a, --anime', 'Only searches through Anime category'))
+            print(' {:15}\t{}'.format('--no-clean', 'Avoids deleting the torrent cache'))
+            print(' {:15}\t{}'.format('--get-magnet', 'Prints the torrent magnet link'))
+            print()
+            exit()
         # --fast
         if flags[2] in args:
             if not searched:
@@ -140,10 +134,6 @@ def parse_args(args):
 
 def search(search_query, filtering):
 
-    #while int(selection) not in range(1, display_count+1):
-    #    print('Selection out of range, please try again')
-    #    selection = input('\nSelect by number: ')
-
     while len(search_query) < 3:
         print('Please make sure your query contains at least 3 characters')
         search_query = input('\nEnter search query: ')
@@ -166,20 +156,6 @@ def search(search_query, filtering):
         print('Displaying anime only:')
         responses.append(requests.get(f'{base_url}/category-search/{search_query}/Anime/1/').text)
     print()
-
-
-def help():
-
-    print('Usage: cthulhu [options] search-query\n')
-    print('Options:')
-    print(' {:15}\t{}'.format('--fast', 'Searches without any filter -> faster requests'))
-    print(' {:15}\t{}'.format('-m, --movie', 'Only searches through Movie category'))
-    print(' {:15}\t{}'.format('-s, --show', 'Only searches through Show category'))
-    print(' {:15}\t{}'.format('-a, --anime', 'Only searches through Anime category'))
-    print(' {:15}\t{}'.format('--no-clean', 'Avoids deleting the torrent cache'))
-    print(' {:15}\t{}'.format('--get-magnet', 'Prints the torrent magnet link'))
-    print()
-    exit()
 
 
 def parse_responses():

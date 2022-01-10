@@ -19,7 +19,7 @@ Feel free to submit issues and feature requests.
 
 ## Requirements
 
-- [mpv](https://github.com/mpv-player/mpv) - A feature rich media player
+- [mpv](https://github.com/mpv-player/mpv) or [vlc](https://github.com/videolan/vlc)
 - [lxml](https://lxml.de/) - A python library for parsing XML/HTML. `pip install lxml`
 - [peerflix](https://github.com/mafintosh/peerflix) - A tool to stream torrents. `npm install -g peerflix`
 

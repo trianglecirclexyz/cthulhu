@@ -7,8 +7,8 @@ and structures. For now, though, my policy is
 if the code works, it works.
 '''
 
-# TODO add vlc support 
-# TODO add nyaa.si as another source
+# TODO add config file for setting defaults 
+# TODO ground work for adding different sources 
 
 import os
 import sys
@@ -29,9 +29,16 @@ responses = []
 
 def main():
 
-    if not os.path.exists('/usr/bin/mpv'):
-        print('error: mpv is not installed')
-        ...
+    player = 'mpv'
+
+    mpv_exists = os.path.exists('/usr/bin/mpv')
+    vlc_exists = os.path.exists('/usr/bin/vlc')
+    if not mpv_exists and not vlc_exists:
+        print('error: neither mpv or vlc were found...exiting')
+        exit()
+    elif not mpv_exists and vlc_exists:
+        player = 'vlc'
+    
 
     # creates /home/$USER/.config/cthulhu/ (not needed for now)
     """ os.makedirs(os.path.expanduser('~')+'/.config/cthulhu', exist_ok=True)
@@ -41,6 +48,9 @@ def main():
     args = sys.argv
     parsed_args = parse_args(args)
 
+    # change player to vlc if specified by --vlc
+    if 'vlc' in parsed_args:
+        player = 'vlc'
 
     # parsing html responses from search query
     final_results = parse_responses()
@@ -50,7 +60,7 @@ def main():
 
     if not 'get-magnet' in parsed_args:
         # play selected torrent in webtorrent
-        os.system(f'peerflix --mpv -a \'{magnet_link}\'')
+        os.system(f'peerflix --{player} -a \'{magnet_link}\'')
 
         # cleans /tmp/webtorrent directory if specified by --no-clean
         print('Cleaning torrent cache...')
@@ -66,7 +76,8 @@ def parse_args(args):
 
     # TODO implement fullscreen flag
 
-    flags = ['-h', '--help', '--fast', '-m', '--movie', '-s', '--show', '-a', '--anime', '--no-clean', '--get-magnet']
+    flags = ['-h', '--help', '--fast', '-m', '--movie', '-s', '--show', '-a', '--anime', 
+    '--no-clean', '--get-magnet', '--vlc']
 
     searched = False
 
@@ -92,12 +103,13 @@ def parse_args(args):
         if flags[0] in args or flags[1] in args:
             print('Usage: cthulhu [options] search-query\n')
             print('Options:')
-            print(' {:15}\t{}'.format('--fast', 'Searches without any filter -> faster requests'))
+            print(' {:15}\t{}'.format('--fast', 'Searches without any filter -> faster responses'))
             print(' {:15}\t{}'.format('-m, --movie', 'Only searches through Movie category'))
             print(' {:15}\t{}'.format('-s, --show', 'Only searches through Show category'))
             print(' {:15}\t{}'.format('-a, --anime', 'Only searches through Anime category'))
             print(' {:15}\t{}'.format('--no-clean', 'Avoids deleting the torrent cache'))
             print(' {:15}\t{}'.format('--get-magnet', 'Prints the torrent magnet link'))
+            print(' {:15}\t{}'.format('--vlc', 'Sets the player to vlc'))
             print()
             exit()
         # --fast
@@ -126,6 +138,9 @@ def parse_args(args):
         # --get-magnet
         if flags[10] in args:
             parsed_args.append('get-magnet')
+        # --vlc
+        if flags[11] in args:
+            parsed_args.append('vlc')
         
     if not searched:
         get_query()

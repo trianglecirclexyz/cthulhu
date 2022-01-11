@@ -52,6 +52,10 @@ def main():
     if 'vlc' in parsed_args:
         player = 'vlc'
 
+    list_mode = '-a'
+    if 'list' in parsed_args:
+        list_mode = '-l'
+
     # parsing html responses from search query
     final_results = parse_responses()
     
@@ -60,7 +64,14 @@ def main():
 
     if not 'get-magnet' in parsed_args:
         # play selected torrent in webtorrent
-        os.system(f'peerflix --{player} -a \'{magnet_link}\'')
+        while True:
+            os.system(f'peerflix --{player} {list_mode} \'{magnet_link}\'')
+            if list_mode == '-l':
+                verification = input('Continue watching? [Y/n] ')
+                if verification == 'n':
+                    break
+            else:
+                break
 
         # cleans /tmp/webtorrent directory if specified by --no-clean
         print('Cleaning torrent cache...')
@@ -77,7 +88,7 @@ def parse_args(args):
     # TODO implement fullscreen flag
 
     flags = ['-h', '--help', '--fast', '-m', '--movie', '-s', '--show', '-a', '--anime', 
-    '--no-clean', '--get-magnet', '--vlc']
+    '--no-clean', '--get-magnet', '--vlc', '-l', '--list']
 
     searched = False
 
@@ -110,6 +121,7 @@ def parse_args(args):
             print(' {:15}\t{}'.format('--no-clean', 'Avoids deleting the torrent cache'))
             print(' {:15}\t{}'.format('--get-magnet', 'Prints the torrent magnet link'))
             print(' {:15}\t{}'.format('--vlc', 'Sets the player to vlc'))
+            print(' {:15}\t{}'.format('--list, -l', 'Lists all files in a torrent for selection'))
             print()
             exit()
         # --fast
@@ -141,6 +153,10 @@ def parse_args(args):
         # --vlc
         if flags[11] in args:
             parsed_args.append('vlc')
+        # --list, -l
+        if flags[12] in args or flags[13] in args:
+            parsed_args.append('list')
+        
         
     if not searched:
         get_query()

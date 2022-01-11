@@ -63,8 +63,9 @@ def main():
     magnet_link = get_magnet_link(final_results, display_count=20)
 
     if not 'get-magnet' in parsed_args:
-        # play selected torrent in webtorrent
+        
         while True:
+            # play selected torrent in peerflix
             os.system(f'peerflix --{player} {list_mode} \'{magnet_link}\'')
             if list_mode == '-l':
                 verification = input('Continue watching? [Y/n] ')

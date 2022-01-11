@@ -14,7 +14,7 @@ Feel free to submit issues and feature requests.
 
 - Runs in the terminal
 - Flags for filtering results by specific categories (Movies, TV Shows, Anime)
-- Ability to queue multiple files in a playlist at a time (useful for watching an entire season of a show)
+- Ability to list multiple files in a torrent (useful for binging TV shows)
 - Filtering out unwanted results by default, such as application files and pornogrophy
 
 ## Requirements

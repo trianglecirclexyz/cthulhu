@@ -12,7 +12,7 @@ Feel free to submit issues and feature requests.
 
 ### Notable Features (so far)
 
-- Runs in the terminal
+- Runs from the terminal
 - Flags for filtering results by specific categories (Movies, TV Shows, Anime)
 - Ability to list multiple files in a torrent (useful for binging TV shows)
 - Filtering out unwanted results by default, such as application files and pornogrophy

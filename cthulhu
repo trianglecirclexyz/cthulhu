@@ -12,14 +12,9 @@ if the code works, it works.
 
 import os
 import sys
+import requests
 from operator import itemgetter
 
-try:
-    import requests
-except ImportError:
-    print('error: requests is not installed (hint: pip install requests)')
-    exit()
-    
 try:
     from lxml import html
 except ImportError:
@@ -39,7 +34,7 @@ def main():
     mpv_exists = os.path.exists('/usr/bin/mpv')
     vlc_exists = os.path.exists('/usr/bin/vlc')
     if not mpv_exists and not vlc_exists:
-        print('error: neither mpv or vlc were found...exiting')
+        print(f'\033[31;1mError:\033[0m mpv or vlc not found… Exiting.')
         exit()
     elif not mpv_exists and vlc_exists:
         player = 'vlc'
@@ -64,7 +59,7 @@ def main():
     # parsing html responses from search query
     final_results = parse_responses()
     
-    # displays results for requesting magnet link 
+    # displays results for requesting magnet link
     magnet_link = get_magnet_link(final_results, display_count=20)
 
     if not 'get-magnet' in parsed_args:
@@ -73,14 +68,14 @@ def main():
             # play selected torrent in peerflix
             os.system(f'peerflix --{player} {list_mode} \'{magnet_link}\'')
             if list_mode == '-l':
-                verification = input('Continue watching? [Y/n] ')
+                verification = input('Continue watching another file in the torrent? [Y/n] ')
                 if verification == 'n':
                     break
             else:
                 break
 
-        # cleans /tmp/webtorrent directory if specified by --no-clean
-        print('Cleaning torrent cache...')
+        # cleans /tmp/webtorrent directory unless specified by --no-clean
+        print('Cleaning /tmp/torrent-stream cache…')
         if 'no-clean' in parsed_args:
             os.system('rm -rf /tmp/torrent-stream')
     else: 
@@ -120,7 +115,7 @@ def parse_args(args):
         if flags[0] in args or flags[1] in args:
             print('Usage: cthulhu [options] search-query\n')
             print('Options:')
-            print(' {:15}\t{}'.format('--fast', 'Searches without any filter -> faster responses'))
+            print(' {:15}\t{}'.format('--fast', 'Searches without any category filter (faster responses)'))
             print(' {:15}\t{}'.format('-m, --movie', 'Only searches through Movie category'))
             print(' {:15}\t{}'.format('-s, --show', 'Only searches through Show category'))
             print(' {:15}\t{}'.format('-a, --anime', 'Only searches through Anime category'))
@@ -176,7 +171,7 @@ def search(search_query, filtering):
     while len(search_query) < 3:
         print('Please make sure your query contains at least 3 characters')
         search_query = input('\nEnter search query: ')
-    print('Receiving response...', end=' ')
+    print('Fetching torrents…', end=' ')
     if filtering == 'default':
         print()
         responses.append(requests.get(f'{base_url}/category-search/{search_query}/Movies/1/').text)
@@ -236,7 +231,7 @@ def parse_responses():
             links.append(tmp_torrent_link)
 
     if flag == num_response:
-        print('No results found\n')
+        print('No results found.\n')
         exit()
 
     for i in range(len(titles)):
@@ -254,21 +249,27 @@ def get_magnet_link(results, display_count):
         display_count = len(results)
     
     # display data to user
-    print('\033[0mNum\t    S/L\t\tTorrent Name\033[0m')
+    print('\033[0m ID\t    S/L\t\tSize\t\tTorrent name\033[0m')
     title_width = 0
     if os.get_terminal_size()[0] > 24:
         title_width = os.get_terminal_size()[0]-25
     for i in range(display_count): 
         torrent_name = results[i][0]
         if len(torrent_name) > title_width:
-            torrent_name = torrent_name[0:title_width-3]+'...'
+            torrent_name = torrent_name[0:title_width-3]+'…'
         seedleech = f'(S:{results[i][3]}, L:{results[i][4]})'
-        print(' \033[1m{:>2}\033[0m\t{:>5}/{:<5}\t{}'.format(i+1, results[i][3], results[i][4], torrent_name))
+        size = results[i][5]+'  ' # couple extra spaces to make sure 3-digit sizes don't shift tabulations
+        print(' \033[1m{:>2}\033[0m\t{:>5}/{:<5}\t{}\t{}'.format(i+1, results[i][3], results[i][4], size,
+            torrent_name))
 
-    selection = input('\nSelect by number: ')
-    while int(selection) not in range(1, display_count+1):
-        print('Selection out of range, please try again')
-        selection = input('\nSelect by number: ')
+    selection = input('\nSelect by ID: ')
+    try:
+        while int(selection) not in range(1, display_count+1):
+            print('ID "' + selection + '" not found, please try again.')
+            selection = input('\nSelect by ID: ')
+    except:
+        print('"' + selection + '" is not a valid ID, please try again.')
+        selection = input('\nSelect by ID: ')
 
     target_link = f'{base_url}{results[int(selection)-1][1]}'
     magnet_response = requests.get(target_link).text
@@ -282,7 +283,7 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print(' Interrupted')
+        print(' Interrupted.')
         try:
             sys.exit(0)
         except SystemExit:

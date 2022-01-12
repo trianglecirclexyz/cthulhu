@@ -105,8 +105,7 @@ def parse_args(args):
         for i in range(1, len(args)):
             if args[i] not in flags:
                 query += args[i]
-                if i != len(args)-1:
-                    query += '+'       
+                query += '+'     
         if query != '':
             search(query, filtering)
         else:
@@ -178,6 +177,7 @@ def search(search_query, filtering):
     while len(search_query) < 3:
         print('Please make sure your query contains at least 3 characters')
         search_query = input('\nEnter search query: ')
+    print(search_query)
     print('Fetching torrents…', end=' ')
     if filtering == 'default':
         print()

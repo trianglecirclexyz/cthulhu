@@ -16,6 +16,7 @@ import os
 import sys
 import shutil
 from operator import itemgetter
+from pathlib import Path
 
 try:
     import requests
@@ -43,7 +44,9 @@ def main():
     if not mpv_exists and not vlc_exists:
         print(f'\033[31;1mError:\033[0m mpv or vlc not found… Exiting.')
         exit()
-    elif mpv_exists and not vlc_exists:
+    elif mpv_exists:
+        player = 'mpv'
+    elif mpv_exists and vlc_exists:
         player = 'mpv'
     elif not mpv_exists and vlc_exists:
         player = 'vlc'
@@ -85,7 +88,19 @@ def main():
 
         # cleans /tmp/webtorrent directory unless specified by --no-clean
         if not 'no-clean' in parsed_args:
-            print('Cleaning /tmp/torrent-stream cache…')
+            def get_size(folder: str) -> int:  # st_blocks * 512 preferred over st_size because the latter
+                                               # calculates the full allocated size even if files not downloaded yet.
+                return sum(p.stat().st_blocks * 512 for p in Path(folder).rglob('*'))
+            def dirsize(size: int) -> str:
+                for unit in ("B", "K", "M", "G", "T"):
+                    if size < 1024:
+                        break
+                    size /= 1024
+                return f'{size:.1f}{unit}'
+            cachesize=dirsize(get_size('/tmp/torrent-stream'))
+            print(f'Cleaning /tmp/torrent-stream cache (~'
+                + cachesize
+                + ')…')
             os.system('rm -rf /tmp/torrent-stream')
     else: 
         print(magnet_link)

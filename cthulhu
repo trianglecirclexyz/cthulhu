@@ -12,8 +12,13 @@ if the code works, it works.
 
 import os
 import sys
-import requests
 from operator import itemgetter
+
+try:
+    import requests
+except ImportError:
+    print('error: requests is not installed (hint: pip install requests)')
+    exit()
 
 try:
     from lxml import html

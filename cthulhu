@@ -9,6 +9,8 @@ if the code works, it works.
 
 # TODO add config file for setting defaults 
 # TODO ground work for adding different sources 
+# TODO spit out magnet link automatically when peerflix not detected 
+# TODO change how programs are detected (mpv, vlc, peerflix)
 
 import os
 import sys
@@ -80,8 +82,8 @@ def main():
                 break
 
         # cleans /tmp/webtorrent directory unless specified by --no-clean
-        print('Cleaning /tmp/torrent-stream cache…')
-        if 'no-clean' in parsed_args:
+        if not 'no-clean' in parsed_args:
+            print('Cleaning /tmp/torrent-stream cache…')
             os.system('rm -rf /tmp/torrent-stream')
     else: 
         print(magnet_link)

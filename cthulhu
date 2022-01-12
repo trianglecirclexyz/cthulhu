@@ -14,6 +14,7 @@ if the code works, it works.
 
 import os
 import sys
+import shutil
 from operator import itemgetter
 
 try:
@@ -36,13 +37,14 @@ responses = []
 
 def main():
 
-    player = 'mpv'
-
-    mpv_exists = os.path.exists('/usr/bin/mpv')
-    vlc_exists = os.path.exists('/usr/bin/vlc')
+    # checks which player(s) exists
+    mpv_exists = shutil.which('mpv') is not None
+    vlc_exists = shutil.which('vlc') is not None
     if not mpv_exists and not vlc_exists:
         print(f'\033[31;1mError:\033[0m mpv or vlc not found… Exiting.')
         exit()
+    elif mpv_exists and not vlc_exists:
+        player = 'mpv'
     elif not mpv_exists and vlc_exists:
         player = 'vlc'
     
@@ -56,7 +58,7 @@ def main():
     parsed_args = parse_args(args)
 
     # change player to vlc if specified by --vlc
-    if 'vlc' in parsed_args:
+    if 'vlc' in parsed_args and vlc_exists:
         player = 'vlc'
 
     list_mode = '-a'

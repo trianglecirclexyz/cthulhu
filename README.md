@@ -21,13 +21,16 @@ Feel free to submit issues and feature requests.
 ## Requirements
 
 - [mpv](https://github.com/mpv-player/mpv) or [vlc](https://github.com/videolan/vlc)
-- [requests](https://docs.python-requests.org/en/latest/) - A python library for making http requests. `pip install requests`
-- [lxml](https://lxml.de/) - A python library for parsing XML/HTML. `pip install lxml`
+- [requests](https://docs.python-requests.org/en/latest/) - A python library for making http requests. `pip3 install requests`
+- [lxml](https://lxml.de/) - A python library for parsing XML/HTML. `pip3 install lxml`
 - [peerflix](https://github.com/mafintosh/peerflix) - A tool to stream torrents. `npm install -g peerflix`
 
 ## Installation for Linux/macOS
 
 ### cURL
+
+Make sure that `/usr/local/bin` exists with the proper permissions. If not, then `sudo mkdir -p -m 775 /usr/local/bin `
+
 cURL **cthulhu** to your **$PATH** and give execute permissions.
 
 ```sh

@@ -13,8 +13,7 @@ Feel free to submit issues and feature requests.
 ### Notable Features (so far)
 
 - Runs directly from the terminal
-- macOS and BSD support 
-- Flags for filtering results by specific categories (Movies, TV Shows, Anime)
+- macOS and BSD support (theoretical, needs testing)
 - Ability to list multiple files in a torrent (useful for binging TV shows)
 - Filtering out unwanted results by default, such as application files and pornogrophy
 

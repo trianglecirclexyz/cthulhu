@@ -61,6 +61,8 @@ def main():
     parsed_args = parse_args(args)
     print(parsed_args)
 
+    # TODO get source
+
     # change player to vlc if specified by --vlc
     if parsed_args['--vlc'][0] == True and vlc_exists:
         player = 'vlc'
@@ -77,8 +79,9 @@ def main():
     selection  = select_torrent(results, display_count=20)
     magnet_link = get_magnet_link(results, selection)
 
+    # spits out magnet link only (if specified by --get-magnet)
+    # else streams torrent like regular
     if parsed_args['--get-magnet'][0] == False:
-        
         while True:
             # play selected torrent in peerflix
             os.system(f'peerflix --{player} {list_mode} \'{magnet_link}\'')

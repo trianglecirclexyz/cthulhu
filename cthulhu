@@ -21,13 +21,13 @@ from pathlib import Path
 try:
     import requests
 except ImportError:
-    print('error: requests is not installed (hint: pip install requests)')
+    print('error: requests is not installed (hint: pip3 install requests)')
     exit()
 
 try:
     from lxml import html
 except ImportError:
-    print('error: lxml is not installed (hint: pip install lxml)')
+    print('error: lxml is not installed (hint: pip3 install lxml)')
     exit()
 
 # can be changed to a mirror, might automate switching mirrors if 
@@ -69,10 +69,11 @@ def main():
         list_mode = '-l'
 
     # parsing html responses from search query
-    final_results = parse_responses()
+    results = parse_responses()
     
-    # displays results for requesting magnet link
-    magnet_link = get_magnet_link(final_results, display_count=20)
+    # displays results, gets user input, and requests magnet link
+    selection  = select_torrent(results, display_count=20)
+    magnet_link = get_magnet_link(results, selection)
 
     if not 'get-magnet' in parsed_args:
         
@@ -105,7 +106,7 @@ def main():
     else: 
         print(magnet_link)
  
-
+# 1337x
 def parse_args(args):
 
     parsed_args = []
@@ -117,17 +118,17 @@ def parse_args(args):
 
     searched = False
 
-    def get_query(filtering='default'):
+    def get_query(filter='default'):
         query = ''
         for i in range(1, len(args)):
             if args[i] not in flags:
                 query += args[i]
                 query += '+'     
         if query != '':
-            search(query, filtering)
+            search(query, filter)
         else:
             query = input('Enter search query: ')
-            search(query, filtering)
+            search(query, filter)
             searched = True
 
     if len(args) == 1:
@@ -151,22 +152,22 @@ def parse_args(args):
         # --fast
         if flags[2] in args:
             if not searched:
-                get_query(filtering='fast')
+                get_query(filter='fast')
                 searched = True
         # -m, --movie
         if flags[3] in args or flags[4] in args:
             if not searched:
-                get_query(filtering='movie')
+                get_query(filter='movie')
                 searched = True
         # -s, --show
         if flags[5] in args or flags[6] in args:
             if not searched:
-                get_query(filtering='show')
+                get_query(filter='show')
                 searched = True
         # -a, --anime
         if flags[7] in args or flags[8] in args:
             if not searched:
-                get_query(filtering='anime')
+                get_query(filter='anime')
                 searched = True
         # --no-clean
         if flags[9] in args:
@@ -188,33 +189,33 @@ def parse_args(args):
 
     return parsed_args
 
-
-def search(search_query, filtering):
+# 1337x
+def search(search_query, filter):
 
     while len(search_query) < 3:
         print('Please make sure your query contains at least 3 characters')
         search_query = input('\nEnter search query: ')
     print('Fetching torrents…', end=' ')
-    if filtering == 'default':
+    if filter == 'default':
         print()
         responses.append(requests.get(f'{base_url}/category-search/{search_query}/Movies/1/').text)
         responses.append(requests.get(f'{base_url}/category-search/{search_query}/TV/1/').text)
         responses.append(requests.get(f'{base_url}/category-search/{search_query}/Anime/1/').text)
-    elif filtering == 'fast':
+    elif filter == 'fast':
         print('Displaying non-filtered results')
         responses.append(requests.get(f'{base_url}/search/{search_query}/1/').text)
-    elif filtering == 'movie':
+    elif filter == 'movie':
         print('Displaying movies only:')
         responses.append(requests.get(f'{base_url}/category-search/{search_query}/Movies/1/').text)
-    elif filtering == 'show':
+    elif filter == 'show':
         print('Displaying shows only:')
         responses.append(requests.get(f'{base_url}/category-search/{search_query}/TV/1/').text)
-    elif filtering == 'anime':
+    elif filter == 'anime':
         print('Displaying anime only:')
         responses.append(requests.get(f'{base_url}/category-search/{search_query}/Anime/1/').text)
     print()
 
-
+# 1337x
 def parse_responses():
 
     packed_data = []
@@ -265,8 +266,7 @@ def parse_responses():
 
     return sorted_data
 
-
-def get_magnet_link(results, display_count):
+def select_torrent(results, display_count):
 
     if display_count>len(results):
         display_count = len(results)
@@ -294,12 +294,25 @@ def get_magnet_link(results, display_count):
         print('"' + selection + '" is not a valid ID, please try again.')
         selection = input('\nSelect by ID: ')
 
+    return selection
+
+# 1337x
+def get_magnet_link(results, selection):
     target_link = f'{base_url}{results[int(selection)-1][1]}'
     magnet_response = requests.get(target_link).text
 
     magnet_link = html.fromstring(magnet_response).xpath('//li/a/@href')[29]
 
     return magnet_link
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':

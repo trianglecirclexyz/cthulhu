@@ -229,7 +229,7 @@ def select_torrent(results, display_count):
         display_count = len(results)
     
     # display data to user
-    print('\033[0m ID\t    S/L\t\tSize\t\tTorrent name\033[0m')
+    print('\033[1m ID\t    S/L\t\tSize\t\tTorrent name\033[0m')
     title_width = 0
     if os.get_terminal_size()[0] > 40:
         title_width = os.get_terminal_size()[0]-41
@@ -409,7 +409,7 @@ class Nyaa:
             exit()
 
         for i in range(len(titles)):
-            packed_data.append([titles[i], links[i], upload_dates[i], seeders[i], leechers[i], file_sizes[i]])
+            packed_data.append([titles[i], links[i], upload_dates[i], int(seeders[i]), int(leechers[i]), file_sizes[i]])
 
         # sort by seeder count
         sorted_data = sorted(packed_data, key=itemgetter(3), reverse=True)

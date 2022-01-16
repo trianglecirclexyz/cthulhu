@@ -14,6 +14,7 @@ Feel free to submit issues and feature requests.
 
 - Runs directly from the terminal
 - macOS and BSD support (theoretical, needs testing)
+- multiple source options (currently: 1337x, nyaa)
 - Ability to list multiple files in a torrent (useful for binging TV shows)
 - Filtering out unwanted results by default, such as application files and pornogrophy
 

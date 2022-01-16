@@ -53,7 +53,7 @@ def main():
 
     # creates /home/$USER/.config/cthulhu/ (not needed for now)
     """ os.makedirs(os.path.expanduser('~')+'/.config/cthulhu', exist_ok=True)
-    cache_dir = os.path.expanduser('~')+'/.config/cthulhu' """
+    config_dir = os.path.expanduser('~')+'/.config/cthulhu' """
 
     # parsing arguments
     args = sys.argv

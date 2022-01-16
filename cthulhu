@@ -9,7 +9,6 @@ if the code works, it works.
 
 # TODO add config file for setting defaults 
 # TODO implement fullscreen flag
-# TODO add ground work for adding different sources 
 # TODO spit out magnet link automatically when peerflix not detected 
 # TODO change how peerflix is detected
 
@@ -34,7 +33,6 @@ except ImportError:
 # can be changed to a mirror, might automate switching mirrors if 
 # server doesn't respond or something
 
-#base_url = 'https://1337x.wtf'
 responses = []
 
 def main():
@@ -62,24 +60,27 @@ def main():
     temp = parse_args(args)
     parsed_args = temp[0]
 
-    # TODO get source
-    # hardcoded for now
-    source = get_source('1337x')
-    get_responses = source.get_responses
-    parse_responses = source.parse_responses
-    get_magnet_link = source.get_magnet_link
+    # get source
+    if parsed_args['--source'][0]:
+        source = temp[2]
+    else:
+        source = '1337x' # change to read from config
+    source_class = get_source(source)
+    get_responses = source_class.get_responses
+    parse_responses = source_class.parse_responses
+    get_magnet_link = source_class.get_magnet_link
 
     # makes a search based on the returned query from parse_args(args)
     query = temp[1]
     search(get_responses, query)
 
     # change player to vlc if specified by --vlc
-    if parsed_args['--vlc'][0] == True and vlc_exists:
+    if parsed_args['--vlc'][0] and vlc_exists:
         player = 'vlc'
 
     # default is just to play all files in torrent sorted by name
     list_mode = '-a'
-    if parsed_args['--list'][0] == True:
+    if parsed_args['--list'][0]:
         list_mode = '-l'
 
     # parsing html responses from search query
@@ -125,6 +126,7 @@ def main():
 def parse_args(args):
 
     options = {
+        '--source': [False, '-s'],
         '--no-clean': [False, None],
         '--get-magnet': [False, None],
         '--vlc': [False, None],
@@ -132,6 +134,8 @@ def parse_args(args):
         '--list': [False, '-l'],
         '--fullscreen': [False, '-f'],
     }
+
+    sources = ['1337x', 'nyaa']
 
     flags = []
     for key in options:
@@ -161,12 +165,18 @@ def parse_args(args):
     else:
 
         if '--help' in args or '-h' in args:
+            print()
             print('Usage: cthulhu [options] search-query\n')
             print('Options:')
+            print(' {:15}\t{}'.format('-s, --source', 'Changes to specified source'))
             print(' {:15}\t{}'.format('--no-clean', 'Avoids deleting the torrent cache'))
             print(' {:15}\t{}'.format('--get-magnet', 'Prints the torrent magnet link'))
-            print(' {:15}\t{}'.format('--vlc', 'Sets the player to vlc'))
             print(' {:15}\t{}'.format('-l, --list', 'Lists all files in a torrent for selection'))
+            print(' {:15}\t{}'.format('--vlc', 'Sets the player to vlc'))
+            print()
+            print('Sources:')
+            for source in sources:
+                print(' {}'.format(source))
             print()
             exit()
 
@@ -179,16 +189,38 @@ def parse_args(args):
                 except KeyError:
                     options[flags[i-1]][0] = True
         
+        # sets source
+        source = ''
+        if '--source' in args or '-s' in args:
+            def parse_source(str):
+                if args.index(str) == len(args)-1:
+                    print('No source specified… Use \'-h\' to see a list of valid sources.')
+                    exit()
+                elif args[args.index(str)+1].lower() in sources:
+                    source = args[args.index(str)+1].lower()
+                    return source
+                else:
+                    print('Invalid source… Use \'-h\' to see a list of valid sources.')
+                    exit()
+
+            try:
+                source = parse_source('--source')
+            except ValueError:
+                source = parse_source('-s')
+
         
     if not searched:
-        query = get_query()
+        query = get_query().replace(source+'+', '')
+        
 
-    return (options, query)
+    return (options, query, source)
 
-# TODO add sources, also option for changing sources
 def get_source(source_name):
     if source_name == '1337x':
         source = ThirteenThirtySevenX()
+    elif source_name == 'nyaa':
+        source = Nyaa()
+    print('\nSource: '+ source_name)
     return source
 
 def select_torrent(results, display_count):
@@ -221,9 +253,7 @@ def select_torrent(results, display_count):
 
     return selection
 
-
 def search(get_responses, query):
-
     while len(query) < 3:
         print('Please make sure your query contains at least 3 characters')
         query = input('\nEnter search query: ')
@@ -306,6 +336,90 @@ class ThirteenThirtySevenX:
         magnet_response = requests.get(target_link).text
 
         magnet_link = html.fromstring(magnet_response).xpath('//li/a/@href')[29]
+
+        return magnet_link
+
+class Nyaa:
+
+    url = 'https://nyaa.si'
+
+    @staticmethod 
+    def get_responses(query):
+        base = __class__.url
+        responses.append(requests.get(f'{base}/?f=0&c=1_0&q={query}&s=seeders&o=desc').text)
+        responses.append(requests.get(f'{base}/?f=0&c=2_0&q={query}&s=seeders&o=desc').text)
+        responses.append(requests.get(f'{base}/?f=0&c=4_0&q={query}&s=seeders&o=desc').text)
+
+    @staticmethod 
+    def parse_responses():
+
+        packed_data = []
+        titles = []
+        seeders = []
+        leechers = []
+        upload_dates = []
+        file_sizes = []
+        links = []
+
+        flag = 0
+        num_response = 0
+        for response in responses:
+            
+            num_response += 1
+            
+            root = html.fromstring(response).xpath('//tbody/tr')
+
+            if not root:
+                flag += 1
+
+            # if anyone knows a better way to parse the html on nyaa.si, please lmk
+            # im literally crying rn (cthulhu -s nyaa naruto)
+            for tr in root:
+                # title
+                tmp_title = tr.xpath('.//td//a/text()').pop()
+                
+                # torrent link
+                tmp_torrent_link = tr.xpath('.//td//a/@href').pop()
+
+
+                temp = tr.xpath('.//td/text()')
+                temp.pop()
+
+                # leechers
+                tmp_leechers = temp.pop()
+
+                # seeders
+                tmp_seeders = temp.pop()
+
+                # upload dates
+                tmp_upload_date = temp.pop().split()[0]
+
+                # file sizes
+                tmp_file_size = temp.pop()
+
+                titles.append(tmp_title)
+                seeders.append(tmp_seeders)
+                leechers.append(tmp_leechers)
+                upload_dates.append(tmp_upload_date)
+                file_sizes.append(tmp_file_size)
+                links.append(tmp_torrent_link)
+
+        if flag == num_response:
+            print('No results found.\n')
+            exit()
+
+        for i in range(len(titles)):
+            packed_data.append([titles[i], links[i], upload_dates[i], seeders[i], leechers[i], file_sizes[i]])
+
+        # sort by seeder count
+        sorted_data = sorted(packed_data, key=itemgetter(3), reverse=True)
+
+        return sorted_data
+  
+    @staticmethod 
+    def get_magnet_link(results, selection):
+        
+        magnet_link = results[int(selection)-1][1]
 
         return magnet_link
 

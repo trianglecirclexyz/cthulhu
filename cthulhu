@@ -30,9 +30,6 @@ except ImportError:
     print('error: lxml is not installed (hint: pip3 install lxml)')
     exit()
 
-# can be changed to a mirror, might automate switching mirrors if 
-# server doesn't respond or something
-
 responses = []
 
 def main():
@@ -216,10 +213,12 @@ def parse_args(args):
     return (options, query, source)
 
 def get_source(source_name):
+    
     if source_name == '1337x':
         source = ThirteenThirtySevenX()
     elif source_name == 'nyaa':
         source = Nyaa()
+
     print('\nSource: '+ source_name)
     return source
 

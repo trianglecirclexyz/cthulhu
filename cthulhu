@@ -10,7 +10,6 @@ if the code works, it works.
 # TODO add config file for setting defaults 
 # TODO implement fullscreen flag
 # TODO spit out magnet link automatically when peerflix not detected 
-# TODO change how peerflix is detected
 
 import os
 import sys
@@ -213,7 +212,7 @@ def parse_args(args):
     return (options, query, source)
 
 def get_source(source_name):
-    
+
     if source_name == '1337x':
         source = ThirteenThirtySevenX()
     elif source_name == 'nyaa':

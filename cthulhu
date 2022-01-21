@@ -132,6 +132,7 @@ def parse_args(args):
     }
 
     sources = ['1337x', 'nyaa']
+    source = ''
 
     flags = []
     for key in options:
@@ -186,7 +187,6 @@ def parse_args(args):
                     options[flags[i-1]][0] = True
         
         # sets source
-        source = ''
         if '--source' in args or '-s' in args:
             def parse_source(str):
                 if args.index(str) == len(args)-1:

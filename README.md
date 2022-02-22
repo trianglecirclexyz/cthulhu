@@ -1,6 +1,6 @@
 # Cthulhu
 
-Cthulhu is a simple python CLI application that facilitates the streaming of torrents directly from 1337x. It uses [peerflix](https://github.com/mafintosh/peerflix) to stream video from magnet links directly.
+Cthulhu is a simple python CLI application that facilitates the streaming of torrents directly from various sources. It uses [peerflix](https://github.com/mafintosh/peerflix) to stream video from magnet links directly.
 
 <p align="center">
 <img src="./preview.gif" alt="Video Preview" width="700px">

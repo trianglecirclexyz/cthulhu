@@ -6,7 +6,7 @@ Cthulhu is a simple python CLI application that facilitates the streaming of tor
 <img src="./preview.gif" alt="Video Preview" width="700px">
 </p>
 
-Cthulhu is heavily inspired by [Bugswriter's notflix](https://github.com/Bugswriter/notflix), which was written using shell scripting. The differences between our programs aren't very stark. All in all, I wrote this program mainly for fun and practice. 
+Cthulhu is heavily inspired by [Bugswriter's notflix](https://github.com/Bugswriter/notflix), which was written using shell scripting. All in all, I wrote this program mainly for fun and practice. 
 
 Feel free to submit issues and feature requests.
 

@@ -2,7 +2,7 @@
 
 '''
 The below code is probably garbage. This is my first 
-real "project", so I am still learning the conventions 
+'real' project, so I am still learning the conventions 
 and structures. For now, though, my policy is 
 if the code works, it works.
 '''
@@ -269,7 +269,7 @@ def search(get_responses, query):
 
 class ThirteenThirtySevenX:
 
-    url = 'https://1337x.wtf'
+    url = 'https://www.1337xxx.to/'
 
     @staticmethod 
     def get_responses(query):
@@ -302,7 +302,7 @@ class ThirteenThirtySevenX:
 
             for tr in root:
                 # title
-                tmp_title = tr.xpath('.//td//a/text()')[0]
+                tmp_title = tr.xpath('.//td//a/text()')[1]
 
                 # torrent link
                 tmp_torrent_link = tr.xpath('.//td//a/@href')[1]

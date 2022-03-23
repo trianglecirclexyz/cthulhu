@@ -321,7 +321,6 @@ class ThirteenThirtySevenX:
             print('No results found.\n')
             exit()
 
-        print(titles)
         for i in range(len(titles)):
             packed_data.append([titles[i], links[i], upload_dates[i], seeders[i], leechers[i], file_sizes[i]])
 

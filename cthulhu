@@ -302,7 +302,7 @@ class ThirteenThirtySevenX:
 
             for tr in root:
                 # title
-                tmp_title = tr.xpath('.//td//a/text()')[1]
+                tmp_title = tr.xpath('.//td//a/text()')[0]
 
                 # torrent link
                 tmp_torrent_link = tr.xpath('.//td//a/@href')[1]
@@ -321,6 +321,7 @@ class ThirteenThirtySevenX:
             print('No results found.\n')
             exit()
 
+        print(titles)
         for i in range(len(titles)):
             packed_data.append([titles[i], links[i], upload_dates[i], seeders[i], leechers[i], file_sizes[i]])
 

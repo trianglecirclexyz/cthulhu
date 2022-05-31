@@ -302,7 +302,7 @@ class ThirteenThirtySevenX:
 
             for tr in root:
                 # title
-                tmp_title = tr.xpath('.//td//a/text()')[1]
+                tmp_title = tr.xpath('.//td//a/text()')[0]
 
                 # torrent link
                 tmp_torrent_link = tr.xpath('.//td//a/@href')[1]
